@@ -37,3 +37,22 @@ app.get('/plants', async (req, res) => {
     } catch (error) {
         res.status(500).json(error);
     }});
+// Détail d'une plante
+app.get('/plants/:id', async (req, res) => {
+    try {
+        // SELECT * FROM students WHERE id=:id
+        const plants = await knex('plants')
+            .where({
+                id: req.params.id,
+            })
+            .select();
+
+        if (plants.length === 0) {
+            return res.status(404).json();
+        }
+
+        return res.status(200).json(plants[0]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}); 
