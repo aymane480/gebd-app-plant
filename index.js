@@ -66,6 +66,7 @@ app.post('/plants', async (req, res) => {
         .where({ id: id[0] })
         .select();
         res.status(201).json(plants[0]);
+         console.log("Plante ajouté");
     } catch (error) {
         res.status(500).json(error);
     }
@@ -79,3 +80,19 @@ app.get('/categories', async (req, res) => {
         res.status(500).json(error);
     }
 });
+
+// Suppresion d'une plante
+app.delete('/plants/:id', async (req, res) => {
+    try {
+        const nbrRecords = await knex('plants')
+            .where({ id: req.params.id })
+            .del();
+        if (nbrRecords === 0) {
+            return res.status(404).json();
+        }
+        res.status(204).json();
+        console.log("Plante supprimé");
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}); 
