@@ -11,7 +11,7 @@ const knex = require('knex')( {
             user: 'root',
             password: 'root',
             database: 'plant_db'
-        }
+        }, debug:true
 });
 
 app.listen(3000, () => {console.log('Listening on port 3000')})
@@ -40,12 +40,14 @@ app.get('/plants', async (req, res) => {
 // Détail d'une plante
 app.get('/plants/:id', async (req, res) => {
     try {
-        // SELECT * FROM students WHERE id=:id
         const plants = await knex('plants')
+            .leftJoin('categories', 'plants.category_id', '=', 'categories.id')
             .where({
-                id: req.params.id,
+                'plants.id': req.params.id,
             })
             .select();
+
+            console.log(plants)
 
         if (plants.length === 0) {
             return res.status(404).json();
@@ -92,6 +94,24 @@ app.delete('/plants/:id', async (req, res) => {
         }
         res.status(204).json();
         console.log("Plante supprimé");
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}); 
+// Récupère toutes les plantes appartenant à la catégorie dont l'ID est spécifié.
+
+app.get('/categories/:id/plants' , async (req, res) => {
+    try {
+         const categories = await knex('categories')
+            .leftJoin('plants', 'plants.category_id', '=', 'categories.id')
+            .where({
+                'categories.id': req.params.id,
+            })
+            .select();
+        if (categories.length === 0) {
+            return res.status(404).json();
+        }
+        return res.status(200).json(categories[0]);
     } catch (error) {
         res.status(500).json(error);
     }
