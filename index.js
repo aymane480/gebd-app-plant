@@ -56,3 +56,26 @@ app.get('/plants/:id', async (req, res) => {
         res.status(500).json(error);
     }
 }); 
+// Ajouter une plante
+app.post('/plants', async (req, res) => {
+    try {
+        const id = await knex('plants')
+        .returning('id')
+        .insert(req.body);
+        const plants = await knex('plants')
+        .where({ id: id[0] })
+        .select();
+        res.status(201).json(plants[0]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}); 
+// Liste des catégories
+app.get('/categories', async (req, res) => {
+    try {
+        const categories = await knex('categories').select(); 
+        res.status(200).json(categories);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+});
